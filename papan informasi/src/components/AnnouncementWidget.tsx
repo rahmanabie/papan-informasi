@@ -83,7 +83,7 @@ const AnnouncementWidget: React.FC<AnnouncementWidgetProps> = ({
     { value: 'cancelled', label: 'Dibatalkan', color: 'red' }
   ];
 
-  // Calculate scroll delay based on speed
+  // Calculate scroll delay and amount based on speed
   const getScrollDelay = () => {
     switch(scrollSpeed) {
       case 1: return 200; // Slow
@@ -91,6 +91,16 @@ const AnnouncementWidget: React.FC<AnnouncementWidgetProps> = ({
       case 3: return 80;  // Fast
       case 4: return 40;  // Very fast
       default: return 120;
+    }
+  };
+  
+  const getScrollAmount = () => {
+    switch(scrollSpeed) {
+      case 1: return 1; // Slow
+      case 2: return 2; // Medium
+      case 3: return 3; // Fast
+      case 4: return 4; // Very fast
+      default: return 2;
     }
   };
 
@@ -302,9 +312,11 @@ const AnnouncementWidget: React.FC<AnnouncementWidgetProps> = ({
           </div>
         ) : (
           <div className="h-full">
+            {/* @ts-ignore */}
             <marquee 
               direction={scrollDirection} 
               scrolldelay={getScrollDelay().toString()} 
+              scrollamount={getScrollAmount().toString()}
               className="h-full"
               behavior="scroll"
             >
@@ -349,25 +361,25 @@ const AnnouncementWidget: React.FC<AnnouncementWidgetProps> = ({
                             )}
                           </td>
                         </tr>
-                        <tr height="50">
+                        <tr style={{ height: '50px' }}>
                           <td width="18%" valign="top"><b>Jam</b></td>
                           <td width="3%" valign="top">:</td>
                           <td width="79%" valign="top">{announcement.time}</td>
                         </tr>
-                        <tr height="50">
+                        <tr style={{ height: '50px' }}>
                           <td valign="top" className="bg-gray-200"><b>Judul</b></td>
                           <td valign="top" className="bg-gray-200">:</td>
                           <td valign="top" className="bg-gray-200" style={{wordWrap: 'break-word'}}>
                             {announcement.title}
                           </td>
                         </tr>
-                        <tr height="50">
+                        <tr style={{ height: '50px' }}>
                           <td valign="top"><b>Lokasi</b></td>
                           <td valign="top">:</td>
                           <td valign="top" style={{wordWrap: 'break-word'}}>{announcement.location}</td>
                         </tr>
                         {announcement.notes && (
-                          <tr height="50">
+                          <tr style={{ height: '50px' }}>
                             <td valign="top" className="bg-gray-200"><b>Keterangan</b></td>
                             <td valign="top" className="bg-gray-200">:</td>
                             <td valign="top" className="bg-gray-200" style={{wordWrap: 'break-word'}}>

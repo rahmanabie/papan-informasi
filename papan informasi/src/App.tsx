@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import './index.css';
 import Header from './components/Header';
-import DateTimeDisplay from './components/DateTimeDisplay';
+// DateTimeDisplay telah dihapus
 import TVStreamingWidget from './components/TVStreamingWidget';
 import AnnouncementWidget from './components/AnnouncementWidget';
 import RunningTextWidget from './components/RunningTextWidget';
@@ -18,11 +18,17 @@ export function App() {
       institutionName: 'Nama Instansi',
       footerText: ' 2023 Papan Informasi. Hak Cipta Dilindungi.',
       bgColor: 'bg-gradient-to-br from-blue-400 to-purple-500',
+      bgImageUrl: '',
+      bgOpacity: 0.7,
+      bgBlur: 0,
+      useBgImage: false,
       textColor: 'text-white',
       headerFontSize: 'text-4xl',
       headerFontFamily: 'Montserrat, sans-serif',
       headerFontWeight: 'bold',
       headerTextColor: 'text-white',
+      logoUrl: '',
+      showLogo: false,
       dateTimeFormat: 'default',
       tvStreamingTitle: 'TV Streaming',
       defaultStreamUrl: 'https://www.youtube.com/watch?v=7aiJ0WrNhaE',
@@ -48,7 +54,9 @@ export function App() {
       ],
       enableRunningText: true,
       runningTextDateBgColor: '#49AD21',
-      runningTextTimeBgColor: '#FFFC36'
+      runningTextTimeBgColor: '#FFFC36',
+      runningTextFontSize: '1.25rem',
+      runningTextFontFamily: 'Arial, sans-serif'
     };
   });
 
@@ -66,18 +74,38 @@ export function App() {
     };
   }, []);
 
+  // Membuat style untuk background image jika diaktifkan
+  const backgroundStyle: React.CSSProperties = settings.useBgImage && settings.bgImageUrl
+    ? {
+        fontFamily: 'Poppins, sans-serif',
+        backgroundImage: `url(${settings.bgImageUrl})`,
+        backgroundSize: 'cover',
+        backgroundPosition: 'center',
+        backgroundRepeat: 'no-repeat',
+        position: 'relative' as const,
+      }
+    : { fontFamily: 'Poppins, sans-serif' };
+
   return (
-    <div className={`min-h-screen ${settings.bgColor} transition-all duration-500 flex flex-col`} 
-      style={{ fontFamily: 'Poppins, sans-serif' }}>
+    <div className={`min-h-screen ${settings.bgColor} transition-all duration-500 flex flex-col relative`} 
+      style={backgroundStyle}>
+      
+      {/* Overlay untuk opacity dan blur jika menggunakan background image */}
+      {settings.useBgImage && settings.bgImageUrl && (
+        <div 
+          className="absolute inset-0 z-0"
+          style={{
+            backgroundColor: 'rgba(0, 0, 0, ' + settings.bgOpacity + ')',
+            backdropFilter: `blur(${settings.bgBlur}px)`,
+          }}
+        />
+      )}
+      
+      {/* Wrapper untuk konten dengan z-index agar di atas overlay */}
+      <div className="relative z-10 flex flex-col flex-1">
       
       {/* Top-right controls */}
       <div className="fixed top-4 right-4 z-50 flex items-center space-x-3">
-        <div className="mr-2">
-          <DateTimeDisplay 
-            textColor={settings.textColor} 
-            dateTimeFormat={settings.dateTimeFormat} 
-          />
-        </div>
         <button 
           onClick={() => setShowSettings(!showSettings)}
           className="bg-white p-2 rounded-full shadow-lg hover:shadow-xl transition-all"
@@ -95,7 +123,9 @@ export function App() {
           headerFontSize={settings.headerFontSize}
           headerFontFamily={settings.headerFontFamily}
           headerFontWeight={settings.headerFontWeight}
-          headerTextColor={settings.headerTextColor} 
+          headerTextColor={settings.headerTextColor}
+          logoUrl={settings.logoUrl}
+          showLogo={settings.showLogo}
         />
         
         <div className="grid grid-cols-1 md:grid-cols-5 gap-4 flex-1">
@@ -134,6 +164,8 @@ export function App() {
             dateBgColor={settings.runningTextDateBgColor}
             timeBgColor={settings.runningTextTimeBgColor}
             enabled={settings.enableRunningText}
+            fontSize={settings.runningTextFontSize}
+            fontFamily={settings.runningTextFontFamily}
           />
         </tbody>
       </table>
@@ -147,6 +179,7 @@ export function App() {
           onClose={() => setShowSettings(false)} 
         />
       )}
+      </div>
     </div>
   );
 }

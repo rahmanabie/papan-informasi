@@ -2,11 +2,17 @@ export interface Settings {
   institutionName: string;
   footerText: string;
   bgColor: string;
+  bgImageUrl: string;
+  bgOpacity: number;
+  bgBlur: number;
+  useBgImage: boolean;
   textColor: string;
   headerFontSize: string;
   headerFontFamily: string;
   headerFontWeight: string;
   headerTextColor: string;
+  logoUrl: string;
+  showLogo: boolean;
   dateTimeFormat: string;
   tvStreamingTitle: string;
   defaultStreamUrl: string;
@@ -29,4 +35,6 @@ export interface Settings {
   enableRunningText: boolean;
   runningTextDateBgColor: string;
   runningTextTimeBgColor: string;
+  runningTextFontSize: string;
+  runningTextFontFamily: string;
 }

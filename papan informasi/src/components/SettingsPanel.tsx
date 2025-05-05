@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Layout, Type, Clock, Tv, Calendar, MessageSquare } from 'lucide-react';
+import { X, Layout, Type, Clock, Tv, Calendar, MessageSquare, Image } from 'lucide-react';
 import { Settings } from '../types';
 
 const bgOptions = [
@@ -88,14 +88,23 @@ interface SettingsPanelProps {
   onClose: () => void;
 }
 
-type TabType = 'umum' | 'header' | 'waktu' | 'tv' | 'agenda' | 'runningtext';
+type TabType = 'umum' | 'header' | 'waktu' | 'tv' | 'agenda' | 'runningtext' | 'background';
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, onClose }) => {
   const [localSettings, setLocalSettings] = useState<Settings>({...settings});
   const [activeTab, setActiveTab] = useState<TabType>('umum');
   
   const handleSave = () => {
-    setSettings(localSettings);
+    // Pastikan runningTextItems tidak kosong dan tidak berisi string kosong
+    const cleanedSettings = {
+      ...localSettings,
+      runningTextItems: Array.isArray(localSettings.runningTextItems) && localSettings.runningTextItems.length > 0
+        ? localSettings.runningTextItems.filter(item => item.trim() !== '')
+        : ['Teks berjalan belum diatur. Silakan tambahkan teks di pengaturan.']
+    };
+    
+    setSettings(cleanedSettings);
+    localStorage.setItem('infoboard-settings', JSON.stringify(cleanedSettings));
     onClose();
   };
   
@@ -167,6 +176,12 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
             onClick={() => setActiveTab('runningtext')}
           >
             <MessageSquare className="w-4 h-4 mr-1" /> Running Text
+          </button>
+          <button 
+            className={`px-4 py-2 font-medium flex items-center ${activeTab === 'background' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+            onClick={() => setActiveTab('background')}
+          >
+            <Image className="w-4 h-4 mr-1" /> Background
           </button>
         </div>
         
@@ -292,7 +307,85 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
                   ))}
                 </select>
               </div>
-              <div>
+              
+              <div className="border-t pt-4 mt-2">
+                <h3 className="font-medium text-gray-900 mb-3">Pengaturan Logo</h3>
+                
+                <div className="flex items-center mb-4">
+                  <input
+                    type="checkbox"
+                    id="showLogo"
+                    name="showLogo"
+                    checked={localSettings.showLogo}
+                    onChange={handleCheckboxChange}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="showLogo" className="ml-2 block text-sm font-medium text-gray-900">
+                    Tampilkan Logo
+                  </label>
+                </div>
+                
+                <div>
+                  <label className="block text-sm font-medium text-gray-700 mb-1">
+                    Upload Logo
+                  </label>
+                  <input
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => {
+                      const file = e.target.files?.[0];
+                      if (file) {
+                        const reader = new FileReader();
+                        reader.onloadend = () => {
+                          // Menyimpan logo sebagai data URL
+                          setLocalSettings(prev => ({
+                            ...prev,
+                            logoUrl: reader.result as string
+                          }));
+                        };
+                        reader.readAsDataURL(file);
+                      }
+                    }}
+                    className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  />
+                  <p className="mt-1 text-xs text-gray-500">
+                    Pilih file gambar logo dari komputer Anda (PNG atau JPG disarankan)
+                  </p>
+                  {localSettings.logoUrl && (
+                    <button
+                      type="button"
+                      onClick={() => {
+                        setLocalSettings(prev => ({
+                          ...prev,
+                          logoUrl: ''
+                        }));
+                      }}
+                      className="mt-2 px-2 py-1 text-xs text-red-600 border border-red-300 rounded hover:bg-red-50"
+                    >
+                      Hapus Logo
+                    </button>
+                  )}
+                </div>
+                
+                {localSettings.logoUrl && (
+                  <div className="mt-2">
+                    <p className="text-sm font-medium text-gray-700 mb-1">Preview Logo:</p>
+                    <div className="border border-gray-300 rounded-md p-2 bg-gray-50 flex justify-center">
+                      <img 
+                        src={localSettings.logoUrl} 
+                        alt="Preview Logo" 
+                        className="h-20 object-contain"
+                        onError={(e) => {
+                          // @ts-ignore
+                          e.target.src = 'https://via.placeholder.com/150x80?text=Logo+Error';
+                        }}
+                      />
+                    </div>
+                  </div>
+                )}
+              </div>
+              
+              <div className="border-t pt-4 mt-2">
                 <label className="block text-sm font-medium text-gray-700 mb-1">
                   Warna Font Header
                 </label>
@@ -523,6 +616,157 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
             </>
           )}
 
+          {/* Background Tab */}
+          {activeTab === 'background' && (
+            <>
+              <h3 className="text-lg font-medium text-gray-900 mb-4">Pengaturan Background</h3>
+              
+              <div className="mb-4">
+                <div className="flex items-center mb-2">
+                  <input
+                    type="checkbox"
+                    id="useBgImage"
+                    name="useBgImage"
+                    checked={localSettings.useBgImage}
+                    onChange={handleCheckboxChange}
+                    className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                  />
+                  <label htmlFor="useBgImage" className="ml-2 block text-sm font-medium text-gray-900">
+                    Gunakan Background Image
+                  </label>
+                </div>
+                <p className="text-xs text-gray-500 mb-2">
+                  Jika diaktifkan, background image akan ditampilkan sebagai latar belakang aplikasi.
+                </p>
+              </div>
+              
+              {localSettings.useBgImage && (
+                <>
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Upload Background Image
+                    </label>
+                    <input
+                      type="file"
+                      accept="image/*"
+                      onChange={(e) => {
+                        const file = e.target.files?.[0];
+                        if (file) {
+                          const reader = new FileReader();
+                          reader.onloadend = () => {
+                            // Menyimpan gambar sebagai data URL
+                            setLocalSettings(prev => ({
+                              ...prev,
+                              bgImageUrl: reader.result as string
+                            }));
+                          };
+                          reader.readAsDataURL(file);
+                        }
+                      }}
+                      className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Pilih file gambar dari komputer Anda (JPG, PNG, GIF).
+                    </p>
+                    {localSettings.bgImageUrl && (
+                      <button
+                        type="button"
+                        onClick={() => {
+                          setLocalSettings(prev => ({
+                            ...prev,
+                            bgImageUrl: ''
+                          }));
+                        }}
+                        className="mt-2 px-2 py-1 text-xs text-red-600 border border-red-300 rounded hover:bg-red-50"
+                      >
+                        Hapus Gambar
+                      </button>
+                    )}
+                  </div>
+                  
+                  {localSettings.bgImageUrl && (
+                    <div className="mb-4">
+                      <label className="block text-sm font-medium text-gray-700 mb-1">
+                        Preview Background
+                      </label>
+                      <div className="border border-gray-300 rounded-md overflow-hidden h-40 bg-gray-100 flex items-center justify-center">
+                        <img 
+                          src={localSettings.bgImageUrl} 
+                          alt="Background Preview" 
+                          className="max-h-full max-w-full object-contain"
+                          onError={(e) => {
+                            e.currentTarget.onerror = null;
+                            e.currentTarget.src = 'data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iMjQiIGhlaWdodD0iMjQiIHhtbG5zPSJodHRwOi8vd3d3LnczLm9yZy8yMDAwL3N2ZyIgZmlsbC1ydWxlPSJldmVub2RkIiBjbGlwLXJ1bGU9ImV2ZW5vZGQiPjxwYXRoIGQ9Ik0yNCAxaDAtMjN2MjJoMjN2LTF6bS0xLTEwdjhoLTh2LThoOHptLTEwIDJ2LTJoLTExdjJoMTF6bTAgNHYtMmgtOXYyaDl6bTAgNHYtMmgtN3YyaDd6bTEwLTEydi04aC0yMnYyMGgydjE4aDIwdi0zMHptLTIgMjh2LTE2aC0xNnYxNmgxNnptLTE4LTI2di0yaDIwdjJoLTIweiIvPjwvc3ZnPg==';
+                          }}
+                        />
+                      </div>
+                    </div>
+                  )}
+                  
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Opacity Overlay ({Math.round(localSettings.bgOpacity * 100)}%)
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="1"
+                      step="0.05"
+                      name="bgOpacity"
+                      value={localSettings.bgOpacity}
+                      onChange={handleChange}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Sesuaikan tingkat transparansi overlay gelap di atas background image.
+                    </p>
+                  </div>
+                  
+                  <div className="mb-4">
+                    <label className="block text-sm font-medium text-gray-700 mb-1">
+                      Blur Effect ({localSettings.bgBlur}px)
+                    </label>
+                    <input
+                      type="range"
+                      min="0"
+                      max="20"
+                      step="1"
+                      name="bgBlur"
+                      value={localSettings.bgBlur}
+                      onChange={handleChange}
+                      className="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer"
+                    />
+                    <p className="text-xs text-gray-500 mt-1">
+                      Sesuaikan tingkat blur pada background image.
+                    </p>
+                  </div>
+                </>
+              )}
+              
+              <div className="mb-4">
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Warna Background
+                </label>
+                <select
+                  name="bgColor"
+                  value={localSettings.bgColor}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {bgOptions.map((option) => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+                <div 
+                  className={`mt-2 h-10 w-full rounded-md ${localSettings.bgColor}`}
+                  style={{ border: '1px solid #e2e8f0' }}
+                />
+              </div>
+            </>
+          )}
+          
           {/* Running Text Tab */}
           {activeTab === 'runningtext' && (
             <>
@@ -612,6 +856,44 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
 
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ukuran Font
+                </label>
+                <select
+                  name="runningTextFontSize"
+                  value={localSettings.runningTextFontSize}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="0.875rem">Kecil</option>
+                  <option value="1rem">Normal</option>
+                  <option value="1.25rem">Sedang</option>
+                  <option value="1.5rem">Besar</option>
+                  <option value="1.75rem">Sangat Besar</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Jenis Font
+                </label>
+                <select
+                  name="runningTextFontFamily"
+                  value={localSettings.runningTextFontFamily}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="Arial, sans-serif">Arial</option>
+                  <option value="'Times New Roman', serif">Times New Roman</option>
+                  <option value="'Courier New', monospace">Courier New</option>
+                  <option value="'Georgia', serif">Georgia</option>
+                  <option value="'Verdana', sans-serif">Verdana</option>
+                  <option value="'Tahoma', sans-serif">Tahoma</option>
+                  <option value="'Trebuchet MS', sans-serif">Trebuchet MS</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
                   Arah Scroll
                 </label>
                 <div className="flex space-x-4">
@@ -646,20 +928,25 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
                 </label>
                 <textarea
                   name="runningTextItemsText"
-                  value={localSettings.runningTextItems ? localSettings.runningTextItems.join('\n') : ''}
+                  value={Array.isArray(localSettings.runningTextItems) ? localSettings.runningTextItems.join('\n') : ''}
                   onChange={(e) => {
                     const textValue = e.target.value;
-                    const textItems = textValue.split('\n').filter(item => item.trim() !== '');
+                    // Memisahkan teks berdasarkan baris baru dan mempertahankan baris kosong
+                    const textItems = textValue.split('\n').map(item => item.trim());
                     setLocalSettings(prev => ({
                       ...prev,
-                      runningTextItems: textItems
+                      runningTextItems: textItems.length > 0 ? textItems : ['Teks berjalan belum diatur']
                     }));
                   }}
                   rows={5}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                   placeholder="Masukkan teks yang akan ditampilkan (satu per baris)"
                 />
-                <p className="text-xs text-gray-500 mt-1">Setiap baris akan ditampilkan sebagai item terpisah</p>
+                <p className="text-xs text-gray-500 mt-1">
+                  Setiap baris akan ditampilkan sebagai item terpisah.
+                  <br />
+                  Tip: Tambahkan karakter seperti '|' di akhir teks untuk memberikan jarak antar item.
+                </p>
               </div>
             </>
           )}

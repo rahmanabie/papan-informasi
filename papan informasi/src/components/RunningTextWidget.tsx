@@ -9,6 +9,8 @@ interface RunningTextWidgetProps {
   dateBgColor?: string;
   timeBgColor?: string;
   enabled?: boolean;
+  fontSize?: string;
+  fontFamily?: string;
 }
 
 const RunningTextWidget: React.FC<RunningTextWidgetProps> = ({
@@ -23,7 +25,9 @@ const RunningTextWidget: React.FC<RunningTextWidgetProps> = ({
   ],
   dateBgColor = '#49AD21',
   timeBgColor = '#FFFC36',
-  enabled = true
+  enabled = true,
+  fontSize = '1.25rem',
+  fontFamily = 'Arial, sans-serif'
 }) => {
   const [currentTime, setCurrentTime] = useState<string>('');
   const [currentDate, setCurrentDate] = useState<string>('');
@@ -59,13 +63,29 @@ const RunningTextWidget: React.FC<RunningTextWidgetProps> = ({
   }, []);
 
   // Kecepatan scroll untuk marquee
-  const scrollAmount = Math.max(1, Math.ceil(scrollSpeed / 30));
+  const getScrollAmount = () => {
+    switch(scrollSpeed) {
+      case 30: return 1;  // Sangat Cepat
+      case 60: return 2;  // Cepat
+      case 90: return 3;  // Sedang
+      case 120: return 4; // Lambat
+      case 150: return 5; // Sangat Lambat
+      default: return Math.max(1, Math.ceil(scrollSpeed / 30));
+    }
+  };
+  
+  // Delay scroll untuk marquee
+  const getScrollDelay = () => {
+    return scrollSpeed;
+  };
 
   // Jika komponen dinonaktifkan, tidak menampilkan apa-apa
   if (!enabled) return null;
   
-  // Pastikan texts adalah array yang valid
-  const validTexts = Array.isArray(texts) && texts.length > 0 ? texts : ['Teks berjalan belum diatur. Silakan tambahkan teks di pengaturan.'];
+  // Pastikan texts adalah array yang valid dan memproses teks dengan benar
+  const validTexts = Array.isArray(texts) && texts.length > 0 && texts.some(t => t.trim() !== '') 
+    ? texts.filter(t => t.trim() !== '') 
+    : ['Teks berjalan belum diatur. Silakan tambahkan teks di pengaturan.'];
   
   return (
     <tr style={{ textAlign: 'center', verticalAlign: 'middle' }}>
@@ -81,12 +101,22 @@ const RunningTextWidget: React.FC<RunningTextWidgetProps> = ({
         backgroundSize: '1000px',
         backgroundColor: bgColor
       }}>
+        {/* 
+          Menggunakan tag marquee dengan ts-ignore karena meskipun sudah deprecated,
+          tag ini masih didukung oleh browser dan merupakan cara paling sederhana
+          untuk membuat teks berjalan
+        */}
         {/* @ts-ignore */}
-        <marquee direction={direction} scrollAmount={scrollAmount} behavior="scroll">
+        <marquee 
+          direction={direction} 
+          scrollAmount={getScrollAmount()} 
+          scrolldelay={getScrollDelay()}
+          behavior="scroll"
+        >
           <div id="runteks">
             {validTexts.map((text, index) => (
               <React.Fragment key={index}>
-                &nbsp;&nbsp;&nbsp;<span style={{ color: textColor }} className="jajal">{text}</span>&nbsp;&nbsp;&nbsp;
+                &nbsp;&nbsp;&nbsp;<span style={{ color: textColor, fontSize, fontFamily }} className="jajal">{text}</span>&nbsp;&nbsp;&nbsp;
               </React.Fragment>
             ))}
           </div>
