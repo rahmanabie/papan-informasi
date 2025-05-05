@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { X, Layout, Type, Clock, Tv } from 'lucide-react';
+import { X, Layout, Type, Clock, Tv, Calendar, MessageSquare } from 'lucide-react';
 import { Settings } from '../types';
 
 const bgOptions = [
@@ -88,7 +88,7 @@ interface SettingsPanelProps {
   onClose: () => void;
 }
 
-type TabType = 'umum' | 'header' | 'waktu' | 'tv' | 'agenda';
+type TabType = 'umum' | 'header' | 'waktu' | 'tv' | 'agenda' | 'runningtext';
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, onClose }) => {
   const [localSettings, setLocalSettings] = useState<Settings>({...settings});
@@ -131,7 +131,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
         </div>
         
         {/* Tabs */}
-        <div className="flex border-b overflow-x-auto">
+        <div className="flex border-b overflow-x-auto mb-4">
           <button 
             className={`px-4 py-2 font-medium flex items-center ${activeTab === 'umum' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
             onClick={() => setActiveTab('umum')}
@@ -144,7 +144,6 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
           >
             <Type className="w-4 h-4 mr-1" /> Header
           </button>
-
           <button 
             className={`px-4 py-2 font-medium flex items-center ${activeTab === 'waktu' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
             onClick={() => setActiveTab('waktu')}
@@ -152,16 +151,22 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
             <Clock className="w-4 h-4 mr-1" /> Waktu
           </button>
           <button 
-            className={`px-4 py-2 font-medium flex items-center ${activeTab === 'agenda' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
-            onClick={() => setActiveTab('agenda')}
-          >
-            <Layout className="w-4 h-4 mr-1" /> Agenda
-          </button>
-          <button 
             className={`px-4 py-2 font-medium flex items-center ${activeTab === 'tv' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
             onClick={() => setActiveTab('tv')}
           >
             <Tv className="w-4 h-4 mr-1" /> TV Streaming
+          </button>
+          <button 
+            className={`px-4 py-2 font-medium flex items-center ${activeTab === 'agenda' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+            onClick={() => setActiveTab('agenda')}
+          >
+            <Calendar className="w-4 h-4 mr-1" /> Agenda
+          </button>
+          <button 
+            className={`px-4 py-2 font-medium flex items-center ${activeTab === 'runningtext' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+            onClick={() => setActiveTab('runningtext')}
+          >
+            <MessageSquare className="w-4 h-4 mr-1" /> Running Text
           </button>
         </div>
         
@@ -308,47 +313,7 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
           )}
 
           {/* Video Tab */}
-          {activeTab === 'video' && (
-            <>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  Judul Widget Video
-                </label>
-                <input
-                  type="text"
-                  name="videoTitle"
-                  value={localSettings.videoTitle}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">
-                  URL Video Default
-                </label>
-                <input
-                  type="text"
-                  name="defaultVideoUrl"
-                  value={localSettings.defaultVideoUrl}
-                  onChange={handleChange}
-                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
-                />
-              </div>
-              <div className="flex items-center">
-                <input
-                  type="checkbox"
-                  id="showVideoControls"
-                  name="showVideoControls"
-                  checked={localSettings.showVideoControls}
-                  onChange={handleCheckboxChange}
-                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
-                />
-                <label htmlFor="showVideoControls" className="ml-2 block text-sm text-gray-700">
-                  Tampilkan Kontrol Video
-                </label>
-              </div>
-            </>
-          )}
+          {/* Video tab has been removed as per user request */}
 
           {/* Waktu Tab */}
           {activeTab === 'waktu' && (
@@ -397,11 +362,9 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {announcementFontSizeOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
+                  <option value="text-xs">Kecil</option>
+                  <option value="text-sm">Sedang</option>
+                  <option value="text-base">Besar</option>
                 </select>
               </div>
               <div>
@@ -414,11 +377,24 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
                   onChange={handleChange}
                   className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
                 >
-                  {scrollSpeedOptions.map(option => (
-                    <option key={option.value} value={option.value}>
-                      {option.label}
-                    </option>
-                  ))}
+                  <option value="1">Lambat</option>
+                  <option value="2">Sedang</option>
+                  <option value="3">Cepat</option>
+                  <option value="4">Sangat Cepat</option>
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Arah Scroll Agenda
+                </label>
+                <select
+                  name="announcementScrollDirection"
+                  value={localSettings.announcementScrollDirection}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="up">Ke Atas</option>
+                  <option value="down">Ke Bawah</option>
                 </select>
               </div>
               <div>
@@ -485,6 +461,19 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
                   Tampilkan Kontrol Agenda
                 </label>
               </div>
+              <div className="flex items-center mt-2">
+                <input
+                  type="checkbox"
+                  id="enableAnnouncementEditing"
+                  name="enableAnnouncementEditing"
+                  checked={localSettings.enableAnnouncementEditing}
+                  onChange={handleCheckboxChange}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <label htmlFor="enableAnnouncementEditing" className="ml-2 block text-sm text-gray-700">
+                  Aktifkan Fitur Edit Agenda
+                </label>
+              </div>
             </>
           )}
 
@@ -530,6 +519,147 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
                 <label htmlFor="showTVStreamingControls" className="ml-2 block text-sm text-gray-700">
                   Tampilkan Kontrol TV Streaming
                 </label>
+              </div>
+            </>
+          )}
+
+          {/* Running Text Tab */}
+          {activeTab === 'runningtext' && (
+            <>
+              <div className="flex items-center mb-4">
+                <input
+                  type="checkbox"
+                  id="enableRunningText"
+                  name="enableRunningText"
+                  checked={localSettings.enableRunningText}
+                  onChange={handleCheckboxChange}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <label htmlFor="enableRunningText" className="ml-2 block text-sm font-medium text-gray-900">
+                  Tampilkan Running Text
+                </label>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Warna Teks
+                </label>
+                <input
+                  type="color"
+                  name="runningTextColor"
+                  value={localSettings.runningTextColor}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Warna Latar Belakang Teks
+                </label>
+                <input
+                  type="color"
+                  name="runningTextBgColor"
+                  value={localSettings.runningTextBgColor}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Warna Latar Belakang Tanggal
+                </label>
+                <input
+                  type="color"
+                  name="runningTextDateBgColor"
+                  value={localSettings.runningTextDateBgColor}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Warna Latar Belakang Jam
+                </label>
+                <input
+                  type="color"
+                  name="runningTextTimeBgColor"
+                  value={localSettings.runningTextTimeBgColor}
+                  onChange={handleChange}
+                  className="w-full h-10 px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Kecepatan Scroll
+                </label>
+                <select
+                  name="runningTextScrollSpeed"
+                  value={localSettings.runningTextScrollSpeed}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  <option value="150">Sangat Lambat</option>
+                  <option value="120">Lambat</option>
+                  <option value="90">Sedang</option>
+                  <option value="60">Cepat</option>
+                  <option value="30">Sangat Cepat</option>
+                </select>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Arah Scroll
+                </label>
+                <div className="flex space-x-4">
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="runningTextDirection"
+                      value="left"
+                      checked={localSettings.runningTextDirection === 'left'}
+                      onChange={handleChange}
+                      className="form-radio h-4 w-4 text-blue-600"
+                    />
+                    <span className="ml-2">Ke Kiri</span>
+                  </label>
+                  <label className="inline-flex items-center">
+                    <input
+                      type="radio"
+                      name="runningTextDirection"
+                      value="right"
+                      checked={localSettings.runningTextDirection === 'right'}
+                      onChange={handleChange}
+                      className="form-radio h-4 w-4 text-blue-600"
+                    />
+                    <span className="ml-2">Ke Kanan</span>
+                  </label>
+                </div>
+              </div>
+
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Teks Running (satu per baris)
+                </label>
+                <textarea
+                  name="runningTextItemsText"
+                  value={localSettings.runningTextItems ? localSettings.runningTextItems.join('\n') : ''}
+                  onChange={(e) => {
+                    const textValue = e.target.value;
+                    const textItems = textValue.split('\n').filter(item => item.trim() !== '');
+                    setLocalSettings(prev => ({
+                      ...prev,
+                      runningTextItems: textItems
+                    }));
+                  }}
+                  rows={5}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  placeholder="Masukkan teks yang akan ditampilkan (satu per baris)"
+                />
+                <p className="text-xs text-gray-500 mt-1">Setiap baris akan ditampilkan sebagai item terpisah</p>
               </div>
             </>
           )}

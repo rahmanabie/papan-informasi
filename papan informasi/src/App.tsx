@@ -4,6 +4,7 @@ import Header from './components/Header';
 import DateTimeDisplay from './components/DateTimeDisplay';
 import TVStreamingWidget from './components/TVStreamingWidget';
 import AnnouncementWidget from './components/AnnouncementWidget';
+import RunningTextWidget from './components/RunningTextWidget';
 import Footer from './components/Footer';
 import SettingsPanel from './components/SettingsPanel';
 import { Settings } from './types';
@@ -30,9 +31,24 @@ export function App() {
       announcementTitle: 'Agenda Kegiatan',
       announcementFontSize: 'text-sm',
       announcementScrollSpeed: 2,
+      announcementScrollDirection: 'up',
       announcementBgColor: 'bg-white',
       announcementTextColor: 'text-gray-800',
-      announcementBorderColor: 'border-green-500'
+      announcementBorderColor: 'border-green-500',
+      enableAnnouncementEditing: true,
+      // Running Text Widget default settings
+      runningTextBgColor: '#FFFFFF',
+      runningTextColor: '#050000',
+      runningTextScrollSpeed: 90,
+      runningTextDirection: 'left',
+      runningTextItems: [
+        'Imran Tolatoly |',
+        'Teks berjalan atau running text adalah elemen desain web atau media lainnya di mana teks bergerak secara horizontal atau vertikal di layar. Teks ini sering kali digunakan untuk menampilkan informasi yang ingin ditonjolkan, seperti pengumuman, peringatan,',
+        '[Semangat Pagi, dan Jangan lupa berdoa]    |'
+      ],
+      enableRunningText: true,
+      runningTextDateBgColor: '#49AD21',
+      runningTextTimeBgColor: '#FFFC36'
     };
   });
 
@@ -96,14 +112,31 @@ export function App() {
                 title={settings.announcementTitle}
                 fontSize={settings.announcementFontSize}
                 scrollSpeed={settings.announcementScrollSpeed}
+                scrollDirection={settings.announcementScrollDirection}
                 bgColor={settings.announcementBgColor}
                 textColor={settings.announcementTextColor}
                 borderColor={settings.announcementBorderColor}
+                enableEditing={settings.enableAnnouncementEditing}
               />
             </div>
           </div>
         </div>
       </div>
+
+      <table className="w-full border-collapse mt-4">
+        <tbody>
+          <RunningTextWidget 
+            textColor={settings.runningTextColor}
+            bgColor={settings.runningTextBgColor}
+            scrollSpeed={settings.runningTextScrollSpeed}
+            direction={settings.runningTextDirection}
+            texts={settings.runningTextItems}
+            dateBgColor={settings.runningTextDateBgColor}
+            timeBgColor={settings.runningTextTimeBgColor}
+            enabled={settings.enableRunningText}
+          />
+        </tbody>
+      </table>
 
       <Footer text={settings.footerText} textColor={settings.textColor} />
       

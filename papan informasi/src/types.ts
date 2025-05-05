@@ -15,7 +15,18 @@ export interface Settings {
   announcementTitle: string;
   announcementFontSize: string;
   announcementScrollSpeed: number;
+  announcementScrollDirection: 'up' | 'down';
   announcementBgColor: string;
   announcementTextColor: string;
   announcementBorderColor: string;
+  enableAnnouncementEditing: boolean;
+  // Running Text Widget settings
+  runningTextBgColor: string;
+  runningTextColor: string;
+  runningTextScrollSpeed: number;
+  runningTextDirection: 'left' | 'right';
+  runningTextItems: string[];
+  enableRunningText: boolean;
+  runningTextDateBgColor: string;
+  runningTextTimeBgColor: string;
 }
