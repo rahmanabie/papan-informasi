@@ -4,14 +4,27 @@ interface HeaderProps {
   institutionName: string;
   textColor: string;
   headerFontSize: string;
+  headerFontFamily?: string;
+  headerFontWeight?: string;
+  headerTextColor?: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ institutionName, textColor, headerFontSize }) => {
+const Header: React.FC<HeaderProps> = ({ 
+  institutionName, 
+  textColor, 
+  headerFontSize,
+  headerFontFamily = 'Montserrat, sans-serif',
+  headerFontWeight = 'bold',
+  headerTextColor
+}) => {
   return (
     <header className={`text-center ${textColor}`}>
       <h1 
-        className={`${headerFontSize} md:text-5xl lg:text-6xl font-bold mb-2`} 
-        style={{ fontFamily: 'Montserrat, sans-serif' }}
+        className={`${headerFontSize} md:text-5xl lg:text-6xl mb-2 ${headerTextColor || textColor}`} 
+        style={{ 
+          fontFamily: headerFontFamily,
+          fontWeight: headerFontWeight
+        }}
       >
         {institutionName}
       </h1>

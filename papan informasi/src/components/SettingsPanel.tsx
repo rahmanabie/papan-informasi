@@ -29,6 +29,53 @@ const fontSizeOptions = [
   { value: 'text-5xl', label: 'Sangat Besar' },
 ];
 
+const announcementFontSizeOptions = [
+  { value: 'text-xs', label: 'Sangat Kecil' },
+  { value: 'text-sm', label: 'Kecil' },
+  { value: 'text-base', label: 'Sedang' },
+  { value: 'text-lg', label: 'Besar' },
+];
+
+const scrollSpeedOptions = [
+  { value: 1, label: 'Lambat' },
+  { value: 2, label: 'Sedang' },
+  { value: 3, label: 'Cepat' },
+  { value: 4, label: 'Sangat Cepat' },
+];
+
+const bgColorOptions = [
+  { value: 'bg-white', label: 'Putih' },
+  { value: 'bg-gray-100', label: 'Abu-abu Terang' },
+  { value: 'bg-blue-50', label: 'Biru Terang' },
+  { value: 'bg-green-50', label: 'Hijau Terang' },
+  { value: 'bg-yellow-50', label: 'Kuning Terang' },
+];
+
+const borderColorOptions = [
+  { value: 'border-green-500', label: 'Hijau' },
+  { value: 'border-blue-500', label: 'Biru' },
+  { value: 'border-red-500', label: 'Merah' },
+  { value: 'border-yellow-500', label: 'Kuning' },
+  { value: 'border-purple-500', label: 'Ungu' },
+  { value: 'border-gray-500', label: 'Abu-abu' },
+];
+
+const fontFamilyOptions = [
+  { value: 'Montserrat, sans-serif', label: 'Montserrat' },
+  { value: 'Poppins, sans-serif', label: 'Poppins' },
+  { value: 'Arial, sans-serif', label: 'Arial' },
+  { value: 'Georgia, serif', label: 'Georgia' },
+  { value: '"Times New Roman", serif', label: 'Times New Roman' },
+];
+
+const fontWeightOptions = [
+  { value: 'normal', label: 'Normal' },
+  { value: 'medium', label: 'Medium' },
+  { value: 'semibold', label: 'Semi Bold' },
+  { value: 'bold', label: 'Bold' },
+  { value: 'extrabold', label: 'Extra Bold' },
+];
+
 const dateFormatOptions = [
   { value: 'default', label: 'Default (Senin, 01 Januari 2023)' },
   { value: 'short', label: 'Pendek (01/01/2023)' },
@@ -41,7 +88,7 @@ interface SettingsPanelProps {
   onClose: () => void;
 }
 
-type TabType = 'umum' | 'header' | 'waktu' | 'tv';
+type TabType = 'umum' | 'header' | 'waktu' | 'tv' | 'agenda';
 
 const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, onClose }) => {
   const [localSettings, setLocalSettings] = useState<Settings>({...settings});
@@ -105,10 +152,16 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
             <Clock className="w-4 h-4 mr-1" /> Waktu
           </button>
           <button 
+            className={`px-4 py-2 font-medium flex items-center ${activeTab === 'agenda' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
+            onClick={() => setActiveTab('agenda')}
+          >
+            <Layout className="w-4 h-4 mr-1" /> Agenda
+          </button>
+          <button 
             className={`px-4 py-2 font-medium flex items-center ${activeTab === 'tv' ? 'border-b-2 border-blue-500 text-blue-500' : 'text-gray-500'}`}
             onClick={() => setActiveTab('tv')}
           >
-            <Tv className="w-4 h-4 mr-1" /> TV
+            <Tv className="w-4 h-4 mr-1" /> TV Streaming
           </button>
         </div>
         
@@ -200,6 +253,57 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
                   ))}
                 </select>
               </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Jenis Font Header
+                </label>
+                <select
+                  name="headerFontFamily"
+                  value={localSettings.headerFontFamily || 'Montserrat, sans-serif'}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {fontFamilyOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ketebalan Font Header
+                </label>
+                <select
+                  name="headerFontWeight"
+                  value={localSettings.headerFontWeight || 'bold'}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {fontWeightOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Warna Font Header
+                </label>
+                <select
+                  name="headerTextColor"
+                  value={localSettings.headerTextColor || localSettings.textColor}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {textColorOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
             </>
           )}
 
@@ -268,6 +372,122 @@ const SettingsPanel: React.FC<SettingsPanelProps> = ({ settings, setSettings, on
               </div>
             </>
           )}
+          {/* Agenda Tab */}
+          {activeTab === 'agenda' && (
+            <>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Judul Widget Agenda
+                </label>
+                <input
+                  type="text"
+                  name="announcementTitle"
+                  value={localSettings.announcementTitle}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Ukuran Font Agenda
+                </label>
+                <select
+                  name="announcementFontSize"
+                  value={localSettings.announcementFontSize}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {announcementFontSizeOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Kecepatan Scroll Agenda
+                </label>
+                <select
+                  name="announcementScrollSpeed"
+                  value={localSettings.announcementScrollSpeed}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {scrollSpeedOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Warna Latar Agenda
+                </label>
+                <select
+                  name="announcementBgColor"
+                  value={localSettings.announcementBgColor}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {bgColorOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Warna Teks Agenda
+                </label>
+                <select
+                  name="announcementTextColor"
+                  value={localSettings.announcementTextColor}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {textColorOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">
+                  Warna Border Agenda
+                </label>
+                <select
+                  name="announcementBorderColor"
+                  value={localSettings.announcementBorderColor}
+                  onChange={handleChange}
+                  className="w-full px-3 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-500"
+                >
+                  {borderColorOptions.map(option => (
+                    <option key={option.value} value={option.value}>
+                      {option.label}
+                    </option>
+                  ))}
+                </select>
+              </div>
+              <div className="flex items-center">
+                <input
+                  type="checkbox"
+                  id="showAnnouncementControls"
+                  name="showAnnouncementControls"
+                  checked={localSettings.showAnnouncementControls}
+                  onChange={handleCheckboxChange}
+                  className="h-4 w-4 text-blue-600 focus:ring-blue-500 border-gray-300 rounded"
+                />
+                <label htmlFor="showAnnouncementControls" className="ml-2 block text-sm text-gray-700">
+                  Tampilkan Kontrol Agenda
+                </label>
+              </div>
+            </>
+          )}
+
           {/* TV Tab */}
           {activeTab === 'tv' && (
             <>

@@ -19,17 +19,20 @@ export function App() {
       bgColor: 'bg-gradient-to-br from-blue-400 to-purple-500',
       textColor: 'text-white',
       headerFontSize: 'text-4xl',
+      headerFontFamily: 'Montserrat, sans-serif',
+      headerFontWeight: 'bold',
+      headerTextColor: 'text-white',
       dateTimeFormat: 'default',
-      videoTitle: 'Video',
-      defaultVideoUrl: 'https://www.youtube.com/embed/dQw4w9WgXcQ',
-      galleryTitle: 'Galeri Foto',
-      autoRotateInterval: 5000,
-      showVideoControls: true,
-      showGalleryControls: true,
       tvStreamingTitle: 'TV Streaming',
       defaultStreamUrl: 'https://www.youtube.com/watch?v=7aiJ0WrNhaE',
       showTVStreamingControls: true,
-      showAnnouncementControls: true
+      showAnnouncementControls: true,
+      announcementTitle: 'Agenda Kegiatan',
+      announcementFontSize: 'text-sm',
+      announcementScrollSpeed: 2,
+      announcementBgColor: 'bg-white',
+      announcementTextColor: 'text-gray-800',
+      announcementBorderColor: 'border-green-500'
     };
   });
 
@@ -73,20 +76,29 @@ export function App() {
         <Header 
           institutionName={settings.institutionName} 
           textColor={settings.textColor} 
-          headerFontSize={settings.headerFontSize} 
+          headerFontSize={settings.headerFontSize}
+          headerFontFamily={settings.headerFontFamily}
+          headerFontWeight={settings.headerFontWeight}
+          headerTextColor={settings.headerTextColor} 
         />
         
-        <div className="grid grid-cols-1 md:grid-cols-4 gap-4 flex-1">
+        <div className="grid grid-cols-1 md:grid-cols-5 gap-4 flex-1">
           <div className="md:col-span-3">
             <TVStreamingWidget
               defaultStreamUrl={settings.defaultStreamUrl}
               showControls={settings.showTVStreamingControls}
             />
           </div>
-          <div className="md:col-span-1">
+          <div className="md:col-span-2">
             <div className="h-full max-h-[70vh] md:max-h-full">
               <AnnouncementWidget 
-                showControls={settings.showAnnouncementControls} 
+                showControls={settings.showAnnouncementControls}
+                title={settings.announcementTitle}
+                fontSize={settings.announcementFontSize}
+                scrollSpeed={settings.announcementScrollSpeed}
+                bgColor={settings.announcementBgColor}
+                textColor={settings.announcementTextColor}
+                borderColor={settings.announcementBorderColor}
               />
             </div>
           </div>
