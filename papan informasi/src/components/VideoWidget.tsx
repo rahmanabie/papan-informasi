@@ -1,10 +1,19 @@
-import React, { useState } from 'react';
-import { Link, Youtube } from 'lucide-react';
+import React, { useState, useEffect } from 'react';
+import { Link } from 'lucide-react';
 
-const VideoWidget: React.FC = () => {
-  const [videoUrl, setVideoUrl] = useState("https://www.youtube.com/embed/dQw4w9WgXcQ");
+interface VideoWidgetProps {
+  defaultVideoUrl: string;
+  showControls: boolean;
+}
+
+const VideoWidget: React.FC<VideoWidgetProps> = ({ defaultVideoUrl, showControls }) => {
+  const [videoUrl, setVideoUrl] = useState(defaultVideoUrl);
   const [showUrlInput, setShowUrlInput] = useState(false);
   const [inputValue, setInputValue] = useState("");
+
+  useEffect(() => {
+    setVideoUrl(defaultVideoUrl);
+  }, [defaultVideoUrl]);
 
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -23,18 +32,6 @@ const VideoWidget: React.FC = () => {
 
   return (
     <div className="bg-white/30 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden">
-      <div className="p-3 bg-white/30 flex justify-between items-center">
-        <h2 className="text-lg font-semibold flex items-center">
-          <Youtube className="mr-2" /> Video
-        </h2>
-        <button 
-          onClick={() => setShowUrlInput(!showUrlInput)}
-          className="bg-blue-500 text-white p-1 rounded-full hover:bg-blue-600 transition"
-        >
-          <Link className="w-5 h-5" />
-        </button>
-      </div>
-      
       <div className="aspect-video relative">
         {showUrlInput ? (
           <div className="absolute inset-0 bg-white/90 backdrop-blur-sm flex items-center justify-center p-4">
@@ -65,6 +62,15 @@ const VideoWidget: React.FC = () => {
             allowFullScreen
             title="Video Widget"
           />
+        )}
+        
+        {showControls && (
+          <button 
+            onClick={() => setShowUrlInput(!showUrlInput)}
+            className="absolute top-2 right-2 bg-blue-500 text-white p-1 rounded-full hover:bg-blue-600 transition z-10"
+          >
+            <Link className="w-5 h-5" />
+          </button>
         )}
       </div>
     </div>

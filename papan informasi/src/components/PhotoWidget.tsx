@@ -8,7 +8,12 @@ const defaultImages = [
   'https://images.unsplash.com/photo-1524178232363-1fb2b075b655?auto=format&fit=crop&q=80'
 ];
 
-const PhotoWidget: React.FC = () => {
+interface PhotoWidgetProps {
+  autoRotateInterval: number;
+  showControls: boolean;
+}
+
+const PhotoWidget: React.FC<PhotoWidgetProps> = ({ autoRotateInterval, showControls }) => {
   const [images, setImages] = useState<string[]>(() => {
     const savedImages = localStorage.getItem('infoboard-images');
     return savedImages ? JSON.parse(savedImages) : defaultImages;
@@ -17,13 +22,13 @@ const PhotoWidget: React.FC = () => {
   const [currentIndex, setCurrentIndex] = useState(0);
   
   useEffect(() => {
-    // Auto-rotate images every 5 seconds
+    // Auto-rotate images every X seconds based on settings
     const interval = setInterval(() => {
       setCurrentIndex((prevIndex) => (prevIndex + 1) % images.length);
-    }, 5000);
+    }, autoRotateInterval);
     
     return () => clearInterval(interval);
-  }, [images.length]);
+  }, [images.length, autoRotateInterval]);
   
   useEffect(() => {
     localStorage.setItem('infoboard-images', JSON.stringify(images));
@@ -53,23 +58,19 @@ const PhotoWidget: React.FC = () => {
   };
 
   return (
-    <div className="bg-white/30 backdrop-blur-sm rounded-xl shadow-lg overflow-hidden">
-      <div className="p-3 bg-white/30 flex justify-between items-center">
-        <h2 className="text-lg font-semibold flex items-center">
-          <Image className="mr-2" /> Galeri Foto
-        </h2>
-        <div>
-          <label htmlFor="image-upload" className="bg-purple-500 text-white p-1 rounded-full hover:bg-purple-600 transition cursor-pointer inline-block">
-            <Image className="w-5 h-5" />
-            <input 
-              id="image-upload" 
-              type="file" 
-              accept="image/*" 
-              className="hidden"
-              onChange={handleFileUpload}
-            />
-          </label>
-        </div>
+    <div className="rounded-xl shadow-lg overflow-hidden">
+      {/* Upload button positioned absolutely in the corner */}
+      <div className="absolute top-2 right-2 z-10">
+        <label htmlFor="image-upload" className="bg-purple-500 text-white p-1 rounded-full hover:bg-purple-600 transition cursor-pointer inline-block">
+          <Image className="w-5 h-5" />
+          <input 
+            id="image-upload" 
+            type="file" 
+            accept="image/*" 
+            className="hidden"
+            onChange={handleFileUpload}
+          />
+        </label>
       </div>
       
       <div className="aspect-video relative overflow-hidden">
@@ -88,7 +89,7 @@ const PhotoWidget: React.FC = () => {
           )}
         </div>
         
-        {images.length > 1 && (
+        {showControls && images.length > 1 && (
           <>
             <button 
               onClick={handlePrevious}
@@ -105,7 +106,7 @@ const PhotoWidget: React.FC = () => {
           </>
         )}
         
-        {images.length > 1 && (
+        {showControls && images.length > 1 && (
           <div className="absolute bottom-2 left-0 right-0 flex justify-center gap-1">
             {images.map((_, idx) => (
               <button 

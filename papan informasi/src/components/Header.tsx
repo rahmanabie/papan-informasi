@@ -3,13 +3,14 @@ import React from 'react';
 interface HeaderProps {
   institutionName: string;
   textColor: string;
+  headerFontSize: string;
 }
 
-const Header: React.FC<HeaderProps> = ({ institutionName, textColor }) => {
+const Header: React.FC<HeaderProps> = ({ institutionName, textColor, headerFontSize }) => {
   return (
     <header className={`text-center ${textColor}`}>
       <h1 
-        className="text-4xl md:text-5xl lg:text-6xl font-bold mb-2" 
+        className={`${headerFontSize} md:text-5xl lg:text-6xl font-bold mb-2`} 
         style={{ fontFamily: 'Montserrat, sans-serif' }}
       >
         {institutionName}
